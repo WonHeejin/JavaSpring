@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springfourth.db.OracleMapper">
+	<select id="sysdate2" resultType="string"> <!-- id는 interface에서 만든 메소드 이름, String은 소문자로 써야함 -->
+		SELECT TD_SYSDATE FROM NEWDBA1JO.TODAY
+	</select>
+</mapper>
