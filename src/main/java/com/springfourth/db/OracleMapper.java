@@ -1,10 +1,12 @@
 package com.springfourth.db;
 
-import org.apache.ibatis.annotations.Select;
+
+
+import com.springfourth.beans.Employees;
 
 public interface OracleMapper {
-	@Select("SELECT SYSDATE FROM DUAL") //mybatis가 있어야 제대로 작동
-	public String sysdate();
-	
-	public String sysdate2();
+	public int isEmployee(Employees emp);
+	public int isAccess(Employees emp);
+	public int insAccessHistory(Employees emp);
+	public Employees getAccessInfo(Employees emp);
 }
