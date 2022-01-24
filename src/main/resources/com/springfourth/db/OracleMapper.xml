@@ -2,8 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.springfourth.db.OracleMapper">
-	<select id="sysdate2" resultType="string"> <!-- id는 interface에서 만든 메소드 이름, String은 소문자로 써야함 -->
-		SELECT TD_SYSDATE FROM NEWDBA1JO.TODAY
+<mapper namespace="com.springfourth.db.OracleMapper"><!-- ↓파라미터(Employees emp)의 타입을 import -->
+	<select id="isEmployee" parameterType="com.springfourth.beans.Employees" resultType="int"> <!-- id는 interface에서 만든 메소드 이름, resultType=string은 소문자로 써야함, -->
+		SELECT COUNT(*) FROM EL WHERE EL_STCODE=#{stCode} AND EL_CODE=#{elCode}
+	</select>
+	<select id="isAccess" parameterType="com.springfourth.beans.Employees" resultType="int">
+		SELECT COUNT(*) FROM EL WHERE EL_STCODE=#{stCode} AND EL_CODE=#{elCode} AND EL_PASSWORD=#{elPassword}
+	</select>
+	<insert id="insAccessHistory" parameterType="com.springfourth.beans.Employees">
+		INSERT INTO AH(AH_ELSTCODE, AH_ELCODE, AH_TIME, AH_IP, AH_TYPE) 
+		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},1)
+	</insert>
+	<select id="getAccessInfo" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
+		SELECT STCODE, STNAME, ELCODE, ELNAME, LASTTIME FROM NEWDBA1JO.ACCESSINFO 
+		WHERE LASTTIME=(SELECT MAX(LASTTIME) FROM NEWDBA1JO.ACCESSINFO WHERE STCODE=#{stCode} AND ELCODE=#{elCode} AND PUBLICIP=#{publicIp})
 	</select>
 </mapper>
