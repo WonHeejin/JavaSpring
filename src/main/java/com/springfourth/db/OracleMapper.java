@@ -9,4 +9,5 @@ public interface OracleMapper {
 	public int isAccess(Employees emp);
 	public int insAccessHistory(Employees emp);
 	public Employees getAccessInfo(Employees emp);
+	public int insAccessOut(Employees emp);
 }
