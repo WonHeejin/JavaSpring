@@ -9,8 +9,9 @@ let publicIp;
 	 }
 	 return check;
 }
-function accessOut(seCode,emCode){
-	location.href="AccessOut?seCode="+seCode+"&emCode="+emCode;
+	//get방식은 location.href를 이용하는게 더 간편하다.
+function accessOut(stCode,elCode){
+	location.href="AccessOut?stCode="+stCode+"&elCode="+elCode+"&publicIp="+publicIp;
 }
 
 function makeForm(fname, faction, fmethod){
