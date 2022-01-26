@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.springfourth.beans.Employees;
 import com.springfourth.services.auth.Authentication;
+import com.springfourth.services.managements.Management;
 
 /**
  * Handles requests for the application home page.
@@ -31,7 +32,6 @@ public class FrontController {
 	
 	@Autowired //new Authentication(); << 안해도 됨
 	Authentication auth;
-	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView accessForm() {
 		
@@ -47,4 +47,13 @@ public class FrontController {
 		
 		return auth.backController(-1,emp);	
 	}
+	@RequestMapping(value = "/Management", method = RequestMethod.POST)
+	public ModelAndView management(@ModelAttribute Employees emp) {
+		return auth.backController(2,emp);	
+	}
+	@RequestMapping(value = "/Sales", method = RequestMethod.POST)
+	public ModelAndView sales(@ModelAttribute Employees emp) {
+		return auth.backController(3,emp);	
+	}
+	
 }

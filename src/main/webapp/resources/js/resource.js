@@ -50,7 +50,8 @@ function getAjaxData(action,data,fn,method){
 		
 }
 
-function initIp(){
+function initIp(msg){
+	if(msg!=""){alert(msg)}
 	/*Public Ip 조회 후 저장*/
 	 getAjaxData("https://api.ipify.org","format=json","getPublicIp","get"); 
 }

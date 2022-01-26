@@ -20,11 +20,14 @@
 	 obj.style.color = fColor;
 	 obj.style.backgroundColor="#F6F6F6";
  }
- function moveService(action, stCode, elCode){
+ function moveService(action, stCode, elCode, elLevel){
 	 const form= makeForm("",action,"post");
 	 const pStCode = makeInputElement("hidden","stCode",stCode,"");
 	 const pElCode = makeInputElement("hidden","elCode",elCode,"");
-	
+	 const pPublicIp = makeInputElement("hidden","publicIp",publicIp,"");
+	 const pElLelve = makeInputElement("hidden","elLevel",elLevel,"");
+	 form.appendChild(pElLelve);
+	 form.appendChild(pPublicIp);
  	 form.appendChild(pStCode);
  	 form.appendChild(pElCode);
  
@@ -83,7 +86,7 @@
 		  text-align:right;}  	 
 </style>
 </head>
-<body onLoad="initIp()">
+<body onLoad="initIp('${msg}')">
 	<div id="infoLogo">
 		<div id="logo">WEB POS</div>
 	<div id="info">
@@ -95,11 +98,9 @@
 	</div>
 	</div>
 	<div id="buttonWrap">
-		<div id="mgt" class="select" onMouseOver="mouseOver(this)" onMouseOut="mouseLeave(this)" onClick="moveService('Management','${accessInfo.stCode}','${accessInfo.elCode}')">Management</div>
-		<div id="sales" class="select" onMouseOver="mouseOver(this)" onMouseOut="mouseLeave(this)" onClick="moveService('Sales','${accessInfo.stCode}','${accessInfo.elCode}')">Sales</div>
+		<div id="mgt" class="select" onMouseOver="mouseOver(this)" onMouseOut="mouseLeave(this)" onClick="moveService('Management','${accessInfo.stCode}','${accessInfo.elCode}','${accessInfo.elLevel}')">Management</div>
+		<div id="sales" class="select" onMouseOver="mouseOver(this)" onMouseOut="mouseLeave(this)" onClick="moveService('Sales','${accessInfo.stCode}','${accessInfo.elCode}','${accessInfo.elLevel}')">Sales</div>
 	</div>
-		<input type="hidden" name="stCode" value="${accessInfo.stCode}"/>
-		<input type="hidden" name="elCode" value="${accessInfo.elCode}"/>
 	<div id="footer">made by ${name}</div>	
 </body>
 </html>
