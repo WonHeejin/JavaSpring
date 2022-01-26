@@ -28,7 +28,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Encryption implements PasswordEncoder{
-	// Spring Security가 기본적을 제공하는 암호화 기법 : SHA 기반
+	/* Spring Security가 기본적으로 제공하는 암호화 기법 : SHA 기반(패스워드 암호화 기법, 복호화 불가능)
+	회원가입때 입력한 비밀번호 암호화*/
 	private PasswordEncoder passwordEncoder;
 
 	public Encryption() {
@@ -54,7 +55,7 @@ public class Encryption implements PasswordEncoder{
 
 	/**
 	 * DES Encryption
-	 * 
+	 * 개인정보 보호용
 	 * @param data
 	 *            비밀키 암호화를 희망하는 문자열
 	 *  @param hint
@@ -62,6 +63,7 @@ public class Encryption implements PasswordEncoder{
 	 * @return String 암호화된 DATA
 	 * @exception Exception
 	 */
+	//TripleDes :: 암호화를 세번=복호화 세번 >> 메모리에 부하가 걸림
 	public String TripleDesEncoding(String data, String hint) throws Exception {
 		if (data == null || data.length() == 0) {	return "";}
 
@@ -90,6 +92,7 @@ public class Encryption implements PasswordEncoder{
 	 * @return String 복호화된 DATA
 	 * @exception Exception
 	 */
+	
 	public String TripleDesDecoding(String encryptionData, String hint) throws Exception {
 		if (encryptionData == null || encryptionData.length() == 0)
 			return "";
@@ -108,7 +111,7 @@ public class Encryption implements PasswordEncoder{
 
 	/**
 	 * AES Encryption
-	 * 
+	 * 개인정보 보호용
 	 * @param encryptionData
 	 *            비밀키 복호화를 희망하는 문자열
 	 * @param hint

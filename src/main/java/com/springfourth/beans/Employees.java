@@ -10,5 +10,6 @@ public class Employees {
 	private String elPassword;
 	private String publicIp;
 	private String lastTime;
+	private String elLevel;
 	
 }
