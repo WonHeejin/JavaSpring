@@ -38,6 +38,5 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="C:/sqldeveloper-21.2.1.204.1703-no-jre/sqldeveloper/jdbc/lib/ojdbc8.jar"/>
-	<classpathentry kind="lib" path="C:/Class/Tomcat/lib/gson-2.8.9.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

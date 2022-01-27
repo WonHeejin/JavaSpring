@@ -47,6 +47,10 @@ public class FrontController {
 		
 		return auth.backController(-1,emp);	
 	}
+	@RequestMapping(value = "/Refresh", method = RequestMethod.POST)
+	public ModelAndView refresh(@ModelAttribute Employees emp) {
+		return auth.backController(-2,emp);	
+	}
 	@RequestMapping(value = "/Management", method = RequestMethod.POST)
 	public ModelAndView management(@ModelAttribute Employees emp) {
 		return auth.backController(2,emp);	

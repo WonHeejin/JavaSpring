@@ -6,10 +6,52 @@
 <meta charset="UTF-8">
 <title>Management</title>
  <script src="resources/js/resource.js"></script>
+  <script src="resources/js/closing.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+/*JQUERY를 이용한 Ajax방식*/
+function getAjaxJsonUsingJquery(action, clientData, fn) {
+	$.ajax({
+		async : true,//true:비동기, false:동기 안써도 기본값이 true
+		type : "post",//기본값 :get
+		url : action,//클라이언트에서 서버로 요청한 값
+		data : clientData,//클라이언트에서 서버로 요청하는 데이터
+		contentType : "application/x-www-form-urlencoded; charset=utf-8",//클라이언트가 요청한 데이터의 종류, 안써도 기본값으로 되어있음
+		dataType : "json",//서버에서 클라이언트로 전달할 데이터의 종류, 기본값이 텍스트
+		success : function(jsonObject){//성공했을 때 실행되는 이벤트
+			alert("AJAX 통신 성공으로 서버 데이터가 도착했습니다.");
+			alert(JSON.stringify(jsonObject));
+			window[fn](jsonObject);
+		},
+		beforeSend : function(){
+			// AJAX 통신 요청 전 호출되는 이벤트
+			alert("AJAX 통신을 시작합니다.");
+		},
+		complete : function(){
+			// AJAX 통신이 완료 될 때 호출되는 이벤트
+			alert("AJAX 통신을 종료합니다.");
+		},
+		err : function(error){
+			// 통신 실패시 호출되는 이벤트
+			alert("AJAX 통신실패했습니다.");
+		},
+		fail: function(){
+			//통신 응답이 없을 때 실행되는 이벤트
+			alert("서버에서 응답이 없습니다.");
+		},		
+		timeout : 10000
+		//서버 응답을 기다리는 최대시간. 이 시간 안에 응답 없으면 fail일 경우의 이벤트 실행. 1000이 1초
+	});
+}
 	function getList(action, stCode) {
+		let fn=null;
 		const data= "stCode="+encodeURIComponent(stCode);
-		getAjaxJson(action, data,"toHTMLfromEMP");
+		if(action=="mgr/EmpList"){
+			fn="toHTMLfromEMP";
+		}else if(action=="mgr/MMList"){
+			fn="toHTMLfromMM";
+		}
+		getAjaxJsonUsingJquery(action, data,fn);
 	}
 	function init(objName) {
 		if (objName != "") {
@@ -314,6 +356,24 @@
 		message+="</table>";	
 		document.getElementById("ajaxData").innerHTML = message;
 	}
+	function toHTMLfromMM(jsonData){
+
+		let message="<table>";
+		message+="<tr>";
+		message+="<td>회원코드</td><td>회원이름</td>";
+		message+="</tr>";
+		
+		for(let index=0;index<jsonData.length;index++){
+			message+="<tr><td>";
+			message+=jsonData[index].mmCode;
+			message+="</td><td>";
+			message+=jsonData[index].mmName;
+			message+="</td></tr>";
+			
+		}
+		message+="</table>";	
+		document.getElementById("ajaxData").innerHTML = message;
+	}
 </script>
 <link rel="stylesheet" type="text/css" href="resources/css/common.css"/>
 <style>
@@ -443,6 +503,8 @@ h2 {
 				class="btn"
 				onClick="accessOut('${accessInfo.stCode}','${accessInfo.elCode}')"
 				value="로그아웃" /></span>
+			<input type="hidden" id="refStCode" value='${accessInfo.stCode}'/>	
+			<input type="hidden" id="refElCode" value='${accessInfo.elCode}'/>		
 		</div>
 	</div>
 
@@ -468,7 +530,7 @@ h2 {
 					<div class="items">
 						<p>
 							<span id="EmpList"
-								onClick="getList('EmpList','${accessInfo.stCode}')">직원리스트</span>
+								onClick="getList('mgr/EmpList','${accessInfo.stCode}')">직원리스트</span>
 						</p>
 						<p>
 							<span onClick="getEmpForm('RegEmpForm','${accessInfo.stCode}')">직원정보등록</span>
@@ -481,7 +543,7 @@ h2 {
 					<div class="items">
 						<p>
 							<span id="MmbList"
-								onClick="getList('CuList','${accessInfo.stCode}','${accessInfo.elCode}')">회원리스트</span>
+								onClick="getList('mgr/MMList','${accessInfo.stCode}','${accessInfo.elCode}')">회원리스트</span>
 						</p>
 						<p>
 							<span onClick="getMmbForm('RegMmbForm')">회원정보등록</span>

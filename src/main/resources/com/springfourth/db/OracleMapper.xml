@@ -22,4 +22,7 @@
 		SELECT EL_STCODE AS STCODE, EL_CODE AS ELCODE, EL_NAME AS ELNAME, EL_LVCODE AS ELLEVEL FROM EL 
 		WHERE EL_STCODE='${stCode}' 
 	</select>
+	<select id="getMMlist" parameterType="com.springfourth.beans.Members" resultType="com.springfourth.beans.Members">
+		SELECT MM_CODE AS MMCODE, MM_NAME AS MMNAME FROM MM  
+	</select>
 </mapper>

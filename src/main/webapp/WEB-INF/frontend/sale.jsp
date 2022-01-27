@@ -7,6 +7,7 @@
 <title>Sales</title>
 <script src="resources/js/resource.js"></script>
 <script src="resources/js/sale.js"></script>
+  <script src="resources/js/closing.js"></script>
 <link rel="stylesheet" type="text/css" href="resources/css/common.css" />
 <link rel="stylesheet" type="text/css" href="resources/css/Sales.css" />
 </head>
@@ -17,6 +18,8 @@
 			class="btn"
 			onClick="accessOut('${accessInfo.stCode}','${accessInfo.elCode}')"
 			value="로그아웃" /></span>
+		<input type="hidden" id="refStCode" value='${accessInfo.stCode}'/>	
+		<input type="hidden" id="refElCode" value='${accessInfo.elCode}'/>
 	</div>
 	<div id="main">
 		<div id="red1">

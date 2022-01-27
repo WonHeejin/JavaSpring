@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <title>Main Page :: Dynamic :: AccessInfo</title>
  <script src="resources/js/resource.js"></script>
+  <script src="resources/js/closing.js"></script>
 <script>
 
  function mouseOver(obj){
@@ -91,10 +92,12 @@
 		<div id="logo">WEB POS</div>
 	<div id="info">
 		${accessInfo.stName}(${accessInfo.stCode}) <span>${accessInfo.elName}(${accessInfo.elCode})</span>
-		최근 접속 일자 ${accessInfo.lastTime} <span><input type="button"
-			class="btn"
+		최근 접속 일자 ${accessInfo.lastTime} <span>
+		<input type="button" class="btn"
 			onClick="accessOut('${accessInfo.stCode}','${accessInfo.elCode}')"
 			value="로그아웃" /></span>
+		<input type="hidden" id="refStCode" value='${accessInfo.stCode}'/>	
+		<input type="hidden" id="refElCode" value='${accessInfo.elCode}'/>	
 	</div>
 	</div>
 	<div id="buttonWrap">
