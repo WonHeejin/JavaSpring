@@ -55,23 +55,11 @@ public class Authentication {
 				break;		
 			case 2 :
 				this.getManagementPage(emp[0]);
-				break;	
-			case 3 :
-				this.getSalePage(emp[0]);
-				break;		
+				break;						
 			}
 		}
 		return mav;
-	}
-	public void getSalePage(Employees emp) {
-		String page="redirect:/";
-		try {
-			if(pu.getAttribute("sessionInfo")!=null) {
-				page="sale";
-			}
-		}catch(Exception e) {e.printStackTrace();}
-		mav.setViewName(page);
-	}
+	}	
 	public void getManagementPage(Employees emp) {
 		String page="redirect:/";
 		String message=null;
@@ -116,14 +104,14 @@ public class Authentication {
 			String pw=null;
 			if((pw=om.isEmployee(emp))!=null) {
 				if(enc.matches(emp.getElPassword(), pw)) {
-					try {
-						emp.setPublicIp(enc.aesEncode(emp.getPublicIp(), emp.getStCode()+"/"+emp.getElCode()));
-					} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
-							| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
-							| BadPaddingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//					try {
+//						emp.setPublicIp(enc.aesEncode(emp.getPublicIp(), emp.getStCode()+"/"+emp.getElCode()));
+//					} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
+//							| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+//							| BadPaddingException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					if(this.convertToBoolean(om.insAccessHistory(emp))) {
 						//로그인 성공--> AccessHistory-insert-commit >> isAccessCheck=true;
 						isAccessCheck=true;
@@ -158,13 +146,13 @@ public class Authentication {
 		String page="redirect:/";	
 		try {
 			//if() {}
-			try {
-				emp.setPublicIp(enc.aesEncode(emp.getPublicIp(), emp.getStCode()+"/"+emp.getElCode()));
-			} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
-					| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
-					| BadPaddingException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				emp.setPublicIp(enc.aesEncode(emp.getPublicIp(), emp.getStCode()+"/"+emp.getElCode()));
+//			} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
+//					| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+//					| BadPaddingException e) {
+//				e.printStackTrace();
+//			}
 			//Database LogOut :: myBatis, jdbc가 자동커밋
 			om.insAccessOut(emp);
 		} catch (Exception e) {
@@ -192,7 +180,7 @@ public class Authentication {
 		mav.addObject("msg",message);
 		mav.setViewName(page);
 	}
-	private boolean convertToBoolean(int number) {
+	protected boolean convertToBoolean(int number) {
 		return number>0?true:false;
 	}
 }

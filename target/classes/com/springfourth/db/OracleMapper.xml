@@ -12,7 +12,7 @@
 	</insert>
 	<select id="getAccessInfo" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
 		SELECT * FROM NEWDBA1JO.ACCESSINFO2 
-		WHERE STCODE=#{stCode} AND ELCODE=#{elCode} AND PUBLICIP=#{publicIp}
+		WHERE STCODE=#{stCode} AND ELCODE=#{elCode}
 	</select>
 	<insert id="insAccessOut" parameterType="com.springfourth.beans.Employees">
 		INSERT INTO AH(AH_ELSTCODE, AH_ELCODE, AH_TIME, AH_IP, AH_TYPE) 
@@ -25,4 +25,37 @@
 	<select id="getMMlist" parameterType="com.springfourth.beans.Members" resultType="com.springfourth.beans.Members">
 		SELECT MM_CODE AS MMCODE, MM_NAME AS MMNAME FROM MM  
 	</select>
+	<select id="getMaxEmp" parameterType="com.springfourth.beans.Employees" resultType="string">
+		SELECT MAX(EL_CODE) AS MAXEMP FROM EL WHERE EL_STCODE=#{stCode}
+	</select>
+	<insert id="insEmp" parameterType="com.springfourth.beans.Employees">
+		INSERT INTO EL(EL_STCODE,EL_CODE,EL_NAME,EL_PASSWORD,EL_LVCODE) 
+		VALUES(#{stCode},#{elCode},#{elName},#{elPassword},#{elLevel})
+	</insert>
+	<select id="getGoodsInfo" parameterType="com.springfourth.beans.Goods" resultType="com.springfourth.beans.Goods">
+		SELECT GO_CODE AS GOCODE, GO_NAME AS GONAME, 1 AS GOQTY, GO_PRICE AS GOPRICE, GO_STATUS AS GOSTATUS FROM GO WHERE GO_CODE=#{goCode}
+	</select>
+	
+	<insert id="insOrder" parameterType="com.springfourth.beans.Orders">
+		INSERT INTO OL(OL_CODE, OL_ELSTCODE, OL_ELCODE,OL_STATUS)
+		VALUES(DEFAULT, #{stCode},#{elCode},DEFAULT)
+	</insert>
+	<select id="getOlCode" parameterType="com.springfourth.beans.Orders" resultType="string">
+		SELECT MAX(OL_CODE)  AS OLCODE FROM OL WHERE OL_ELSTCODE=#{stCode} AND OL_ELCODE=#{elCode}
+	</select>
+	<select id="getGoDiscount" parameterType="com.springfourth.beans.Orders" resultType="com.springfourth.beans.OrderDetails">
+		SELECT GO_DISCOUNT AS GODISCOUNT, GO_CODE AS GOCODE FROM GO WHERE GO_CODE IN
+		<foreach item="goods" collection="otList" separator="," open="(" close=")">
+		#{goods.goCode}
+		</foreach>
+	</select>
+	<insert id="insOrderDetail" parameterType="com.springfourth.beans.OrderDetails">
+
+		INSERT INTO OT(OT_OLCODE, OT_OLELSTCODE, OT_OLELCODE, OT_GOCODE, OT_QTY, OT_DISCOUNT) 
+		VALUES(#{olCode},#{stCode},#{elCode},#{goCode},#{goQty},#{goDiscount})
+		
+	</insert>
+	<update id="updOrderStatus">
+		UPDATE OL SET OL_STATUS=#{olStatus} WHERE OL_CODE=#{olCode} AND OL_ELSTCODE=#{stCode} AND OL_ELCODE=#{elCode}
+	</update>
 </mapper>

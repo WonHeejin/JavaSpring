@@ -9,6 +9,35 @@
   <script src="resources/js/closing.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+
+ function sendAjaxJson(action,data,fn,content){	
+		const ajax = new XMLHttpRequest();
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				window[fn](ajax.responseText);	//json 데이터 parse하면 배열로 접근									
+			}
+		};
+		ajax.open("post", action, true);
+		ajax.setRequestHeader("Content-type",content? "application/x-www-form-urlencoded; charset=utf-8": "application/json; charset=utf-8");	
+		ajax.send(data);
+	}
+ function getList(action, pStCode) {
+	let fn=null;
+	let jsonData=[];
+	jsonData.push({stCode:pStCode});
+	if(action=="mgr/EmpList"){
+		fn="toHTMLfromEMP";
+	}else if(action=="mgr/MMList"){
+		fn="toHTMLfromMM";
+	}
+	const data=JSON.stringify(jsonData);
+	sendAjaxJson(action, data,fn,false);
+}
+function init(objName) {
+	if (objName != "") {
+		document.getElementById(objName).click();
+	}
+} 
 /*JQUERY를 이용한 Ajax방식*/
 function getAjaxJsonUsingJquery(action, clientData, fn) {
 	$.ajax({
@@ -19,11 +48,11 @@ function getAjaxJsonUsingJquery(action, clientData, fn) {
 		contentType : "application/x-www-form-urlencoded; charset=utf-8",//클라이언트가 요청한 데이터의 종류, 안써도 기본값으로 되어있음
 		dataType : "json",//서버에서 클라이언트로 전달할 데이터의 종류, 기본값이 텍스트
 		success : function(jsonObject){//성공했을 때 실행되는 이벤트
-			alert("AJAX 통신 성공으로 서버 데이터가 도착했습니다.");
-			alert(JSON.stringify(jsonObject));
+			//alert("AJAX 통신 성공으로 서버 데이터가 도착했습니다.");
+			//alert(JSON.stringify(jsonObject));
 			window[fn](jsonObject);
 		},
-		beforeSend : function(){
+/*		beforeSend : function(){
 			// AJAX 통신 요청 전 호출되는 이벤트
 			alert("AJAX 통신을 시작합니다.");
 		},
@@ -41,9 +70,10 @@ function getAjaxJsonUsingJquery(action, clientData, fn) {
 		},		
 		timeout : 10000
 		//서버 응답을 기다리는 최대시간. 이 시간 안에 응답 없으면 fail일 경우의 이벤트 실행. 1000이 1초
+*/
 	});
 }
-	function getList(action, stCode) {
+/* 	function getList(action, stCode) {
 		let fn=null;
 		const data= "stCode="+encodeURIComponent(stCode);
 		if(action=="mgr/EmpList"){
@@ -53,68 +83,38 @@ function getAjaxJsonUsingJquery(action, clientData, fn) {
 		}
 		getAjaxJsonUsingJquery(action, data,fn);
 	}
-	function init(objName) {
-		if (objName != "") {
-			document.getElementById(objName).click();
-		}
+ */
+ 	function getEmpMax(action,pStCode){
+		 let jsonData=[];
+		jsonData.push({stCode:pStCode});
+		const data=JSON.stringify(jsonData);
+		 sendAjaxJson(action,data,"getEmpForm",false);
+ }
+	function getEmpForm(maxEmp){
+		const max=parseInt(maxEmp);
+		let form="<input type=\"text\" name=\"stCode\" value=\"" + document.getElementById("refStCode").value + "\" readOnly />";
+		form+="<input type=\"text\" name=\"elCode\" value=\"" +(max+1)+ "\" readOnly />";
+		form+="<input type=\"text\" name=\"elName\" placeholder=\"직원이름\" />";
+		form+="<input type=\"password\" name=\"elPassword\" placeholder=\"비밀번호\" />";
+		form+="<input type=\"text\" name=\"elLevel\" placeholder=\"등급코드\" />";
+		form+="<input type=\"button\" value=\"직원등록\" onClick=\"RegEmp('"+document.getElementById("refStCode").value+"','"+(max+1)+"')\" />";
+		document.getElementById("ajaxData").innerHTML=form;
 	}
-	/* AJAX : Asynchronous Javascript And XML 
-	 1. XMLHttpRequest 객체 생성
-	 2. onReadyStateChange 속성 사용 --> 서버와의 통신 내용 설정 ==> function
-	    ajax.readyState : 0 - 초기화
-										1 - 로딩중
-										2 - 로딩완료
-										3 - 서버와의 통신중
-										4 - 서버로부터 데이터 전송 받음 
-	    ajax.status     : 200 - 전송 중 에러 없음
-	    									400 - 전송 중 에러 :: 클라이언트로 보낼 페이지가 없음
-	    	
-	 			5. 서버로부터 데이터를 넘겨 받기 --> responseText
-	 3. 생성된 XMLHttpRequest 객체의 Open() 
-	 4. Open 된 XMLHttpRequest 객체를 서버로 Send()
-	 */
-	function getAjaxData(action, data) {
-		let ajax = new XMLHttpRequest();
-		/*응답받은 후의 행동 결정*/
-		ajax.onreadystatechange = function() {
-			if (ajax.readyState == 4 && ajax.status == 200) {
-				/*FrontController에서 입력한 
-					res.setContentType("text/html;charset=utf-8");
-					PrintWriter p= res.getWriter();
-					p.write(ajaxData);
-				가 ajax.responseText로 오고, 이걸 다시 serverData에 저장*/
-				let serverData = ajax.responseText;
-				if(serverData.substr(0,1)=="<"){
-					/*받아온 serverData를 id가 "ajaxData"인 곳에 전달*/
-					document.getElementById("ajaxData").innerHTML = serverData;	
-				}else{
-					document.getElementById(serverData).click();
-				}
-				
-				
-			}
-		};
-		/*서버 연결 요청*/
-		ajax.open("post", action, true);
-		ajax.setRequestHeader("Content-type",
-				"application/x-www-form-urlencoded");
-		
-		ajax.send(data);
+	function RegEmp(pStCode, pElCode) {
+		 let jsonData=[];
+		jsonData.push({stCode:pStCode,elCode:pElCode,
+				elName:document.getElementsByName("elName")[0].value,
+				elPassword:document.getElementsByName("elPassword")[0].value,
+				elLevel:document.getElementsByName("elLevel")[0].value});
+		const data=JSON.stringify(jsonData);
+		sendAjaxJson("mgr/RegEmp",data,"loadList",false);
 	}
-	function getEmpForm(action,pStCode){
-		
-		const data ="stCode="+ encodeURIComponent(pStCode);
-		
-		getAjaxData(action,data);
-	}
-	function RegEmp(stCode, elCode) {
-		const elName=document.getElementsByName("elName")[0].value;
-		const emPass=document.getElementsByName("emPass")[0].value;
-		const data = "stCode="+encodeURIComponent(stCode)
-					+ "&elCode="+encodeURIComponent(elCode)
-					+ "&elName="+encodeURIComponent(elName)
-					+ "&emPass="+encodeURIComponent(emPass);
-		getAjaxData("RegEmp",data);
+	function loadList(data){
+		if(data.substr(0,1)=="등"){
+			alert(data);
+		}else{
+			document.getElementById(data).click();	
+		}	
 	}
 	function getMmbForm(action){
 		getAjaxData(action,null);
@@ -331,8 +331,8 @@ function getAjaxJsonUsingJquery(action, clientData, fn) {
 		message+="</table>";	
 		document.getElementById("ajaxData").innerHTML = message;
 	}
-	function toHTMLfromEMP(jsonData){
-
+	function toHTMLfromEMP(data){
+		const jsonData=JSON.parse(data);
 		let message="<table>";
 		message+="<tr>";
 		message+="<td>매장코드</td><td>직원코드</td><td>직원이름</td><td>등급</td>";
@@ -356,8 +356,8 @@ function getAjaxJsonUsingJquery(action, clientData, fn) {
 		message+="</table>";	
 		document.getElementById("ajaxData").innerHTML = message;
 	}
-	function toHTMLfromMM(jsonData){
-
+	function toHTMLfromMM(data){
+		const jsonData=JSON.parse(data);
 		let message="<table>";
 		message+="<tr>";
 		message+="<td>회원코드</td><td>회원이름</td>";
@@ -494,7 +494,7 @@ h2 {
 </style>
 
 </head>
-<body onLoad="init('${objName}')">
+<body  onLoad="initIp('${msg}')">
 	<div id="infoLogo">
 		<div id="logo">WEB POS</div>
 		<div id="info">
@@ -533,7 +533,7 @@ h2 {
 								onClick="getList('mgr/EmpList','${accessInfo.stCode}')">직원리스트</span>
 						</p>
 						<p>
-							<span onClick="getEmpForm('RegEmpForm','${accessInfo.stCode}')">직원정보등록</span>
+							<span onClick="getEmpMax('mgr/RegEmpForm','${accessInfo.stCode}')">직원정보등록</span>
 						</p>
 						<p><span onClick="getModEmpForm('ModEmpForm','${accessInfo.stCode}')">직원정보수정</span></p>
 					</div>
@@ -569,7 +569,7 @@ h2 {
 	</div>
 	<div id="ajaxData">${list}</div>
 	<div id="footer">made by jean</div>
-</body>
+</body >
 <script>
 	/* 메뉴에 관련 항목을 클래스 이름으로 연결 */
 	let menuZone = document.getElementsByClassName("managements");

@@ -17,6 +17,9 @@
 	</bean>	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="ds"></property>
-	</bean> 	
+	</bean> 
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="ds"></property>
+	</bean>	
 		<mybatis-spring:scan base-package="com.springfourth.db"/>
 </beans>

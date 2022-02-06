@@ -34,7 +34,7 @@ function makeInputElement(type, name, value, placeholder){
 function getAjaxData(action,data,fn,method){
 	const ajax = new XMLHttpRequest();
 		ajax.onreadystatechange = function() {
-			if ( ajax.readyState== 4 && ajax.status == 200) {			
+			if ( ajax.readyState== 4 && ajax.status == 200) {		
 				window[fn](JSON.parse(ajax.responseText));						
 			}
 		};
@@ -53,7 +53,7 @@ function getAjaxData(action,data,fn,method){
 function initIp(msg){
 	if(msg!=""){alert(msg)}
 	/*Public Ip 조회 후 저장*/
-	 getAjaxData("https://api.ipify.org","format=json","getPublicIp","get"); 
+	 getAjaxData("https://api.ipify.org","format=json","getPublicIp","get");
 }
  function getPublicIp(jsonData){
 	 publicIp=jsonData.ip;

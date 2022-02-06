@@ -10,22 +10,19 @@ function payment(){
 	if(list.childNodes.length==0){ return;} //자바스크립트의 return은 break의 기능을 수행하기도 함
 	const prCode=document.getElementsByName("goCode");
 	const prQuantity=document.getElementsByName("prQuantity");
-	const cuCode=document.getElementsByName("cuCode")[0];
-	let clientData="";
+	let clientData=[];
 	for(idx=0;idx<prCode.length;idx++){
-		clientData+=(cuCode.value!="")?"cuCode="+cuCode.value+"&":"cuCode=9999&";
-		clientData+="prCode="+prCode[idx].innerText+"&prQuantity="+prQuantity[idx].innerText;
-		if(idx<prCode.length-1){clientData+="&";}
+		clientData.push({goCode:prCode[idx].innerText,goQty:prQuantity[idx].innerText});
 	}
-	getAjaxData("Orders",clientData,"cancle");
+	getAjaxData2("mgr/Orders",JSON.stringify(clientData),"cancle");
 }
 
-function goodsInfoCtl(action,fn){ 
-	const prCode= document.getElementsByName("prCode")[0].value;
+function goodsInfoCtl(pPrCode){ 
+	const prCode= document.getElementsByName(pPrCode)[0].value;
 	if(prCode!=""){
 		if(!comparePrCode(prCode,"record")){
-		const data="goCode="+encodeURIComponent(prCode);
-		getAjaxData(action,data,fn);
+		const data=JSON.stringify({goCode:prCode});
+		getAjaxJsonUsingJquery('mgr/getGocode',data,'addGoods');
 		}
 	}else{
 		alert("상품코드 입력");
@@ -34,15 +31,29 @@ function goodsInfoCtl(action,fn){
 	goCode.focus();
 
 }
-function getAjaxData(action,data,fn){
+/*JQUERY를 이용한 Ajax방식*/
+function getAjaxJsonUsingJquery(action, clientData, fn) {
+	$.ajax({
+		async : true,
+		type : "post",
+		url : action,
+		data : clientData,
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(jsonObject){
+			window[fn](jsonObject);
+		},
+	});
+}
+function getAjaxData2(action,data,fn){
 	const ajax = new XMLHttpRequest();
 		ajax.onreadystatechange = function() {
 			if ( ajax.readyState== 4 && ajax.status == 200) {			
-				window[fn](JSON.parse(ajax.responseText));						
+				window[fn](ajax.responseText);						
 			}
 		};
 		ajax.open("post", action, true);
-		ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");	
+		ajax.setRequestHeader("Content-type","application/json");	
 		ajax.send(data);
 }
 function comparePrCode(prCode,list){
@@ -62,25 +73,27 @@ function comparePrCode(prCode,list){
 	return check;
 }
 function addGoods(goodsInfo){
-	
 	const list = document.getElementById("list");
-	let jsonData=goodsInfo; //JSON.stringfy :: 전달된 데이터를 문자열로 변환 ex)prName:'새우깡'->"prName":"새우깡"
-	if(jsonData[0].goState==-1&&jsonData!=null){
-		document.getElementsByName("prCode")[0].placeholder="판매불가 상품";
-	}else{
+	let jsonData=goodsInfo;
+	if(jsonData.goStatus=="S"&&jsonData!=""){
 		no++;
 		let record=createDiv("record","record");
 		record.setAttribute("onClick","selectBotton(this)");
 		for(colIdx=0;colIdx<7;colIdx++){
 		let item = createDiv(itemName[colIdx],"goods "+itemName[colIdx]);
-		item.innerHTML=(colIdx==0)?no:(colIdx==1)?jsonData[0].goName:(colIdx==2)?jsonData[0].goQuantity:(colIdx==3)?jsonData[0].goPrice:(colIdx==4)?parseInt(jsonData[0].goQuantity)*parseInt(jsonData[0].goPrice):(colIdx==5)?jsonData[0].goDiscount:jsonData[0].goCode;
+		item.innerHTML=(colIdx==0)?no:(colIdx==1)?jsonData.goName:(colIdx==2)?jsonData.goQty:(colIdx==3)?jsonData.goPrice:(colIdx==4)?parseInt(jsonData.goQty)*parseInt(jsonData.goPrice):(colIdx==5)?jsonData.goDiscount:jsonData.goCode;
 		record.appendChild(item);
 		}
 		list.appendChild(record);
-		document.getElementsByName("prCode")[0].placeholder="상품코드 입력";
-	
+		document.getElementsByName("prCode")[0].placeholder="상품코드 입력";	
 		orderList();
-		orderList2();				
+		orderList2();			
+	}else if(jsonData.goStatus=="T"){
+		document.getElementsByName("prCode")[0].placeholder="일시품절 상품";			
+	}else if(jsonData.goStatus=="D"){
+		document.getElementsByName("prCode")[0].placeholder="판매불가 상품";			
+	}else{
+		document.getElementsByName("prCode")[0].placeholder="존재하지 않는 상품코드";
 	}	
 		selectBotton(list.lastChild);		
 }
@@ -173,13 +186,7 @@ function resetNo(){
 	}
 }	
 function cancle(msg){
-	if(msg != "undefined"){
-			if(msg=="1"){
-				alert("결제완료");	
-			}else{
-				alert("결제실패");	
-			}		
-		}
+	alert(msg);
 	const list=document.getElementById("list");
 	while(list.hasChildNodes()){
 		list.removeChild(list.lastChild);
