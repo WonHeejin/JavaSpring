@@ -23,6 +23,13 @@
 			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<!-- Multipart-Config-->
+		<multipart-config>
+			<location>C:\\Class\\HEEJIN\\springfourth\\src\\main\\webapp\\resources</location>
+			<max-file-siz>10485760</max-file-siz><!-- 저장될 이미지의 최대크기 -->
+			<max-request-siz>20971520</max-request-siz><!-- 동시에 여러개의 파일을 전송할 시, 그 합계 사이즈 -->
+			<file-size-threshold>10485760</file-size-threshold><!-- 파일을 저장할때까지 임시저장할 사이즈 -->
+		</multipart-config>
 	</servlet>
 		
 	<servlet-mapping>
