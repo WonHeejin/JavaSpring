@@ -1,6 +1,9 @@
 package com.springfourth.services.managements;
 
 
+import java.io.File;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -8,8 +11,10 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springfourth.beans.Employees;
+import com.springfourth.beans.Goods;
 import com.springfourth.db.OracleMapper;
 import com.springfourth.utils.Encryption;
 
@@ -41,7 +46,34 @@ public class Management{
 		case 7 :
 			regEmp(md);
 			break;
+		case 8 :
+			getGoList(md);
+			break;	
+		case 9 :
+			updGoodsInfo(md);
+			break;		
 		}
+	}
+	private void updGoodsInfo(Model md) {
+		boolean tran=false;
+		//propagation, isolation 설정
+		this.setTransactionConf(TransactionDefinition.PROPAGATION_REQUIRED, TransactionDefinition.ISOLATION_READ_COMMITTED, false);
+		//상품정보 업데이트
+		if(this.convertToBoolean(this.om.updGoodsInfo((Goods)md.getAttribute("go")))) {
+			//File 저장
+			File saveFile=null;
+			for(MultipartFile mf:(MultipartFile[])md.getAttribute("file")) {
+				saveFile=new File(((Goods)md.getAttribute("go")).getGoImgLoc());
+				try {mf.transferTo(saveFile);} catch (Exception e) {e.printStackTrace();}
+			}
+			tran=true;
+		}
+		//transaction end
+		this.setTransactionEnd(tran);
+		this.getGoList(md);	
+	}
+	private void getGoList(Model md) {
+		md.addAttribute("goList", om.getGoList());
 	}
 	private void getEmpList(Model md) {		
 		md.addAttribute("EmpList", om.getEmplist((Employees)md.getAttribute("emp")));

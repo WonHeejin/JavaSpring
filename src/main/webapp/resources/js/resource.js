@@ -54,7 +54,13 @@ function initIp(msg){
 	if(msg!=""){alert(msg)}
 	/*Public Ip 조회 후 저장*/
 	 getAjaxData("https://api.ipify.org","format=json","getPublicIp","get");
+	 if(document.getElementById("container")!=null){
+	 
+	 	let container=document.getElementById("container");
+		container.style.display="none";	
+	}
 }
  function getPublicIp(jsonData){
 	 publicIp=jsonData.ip;
  }
+ 

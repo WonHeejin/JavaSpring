@@ -8,9 +8,17 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.springfourth.beans.Employees;
@@ -30,6 +38,12 @@ public class Authentication {
 	private ProjectUtils pu;
 	@Autowired
 	private Encryption enc;
+	@Autowired
+	JavaMailSender javaMail;
+	@Autowired
+	private DataSourceTransactionManager tx;
+	private TransactionStatus txStatus;
+	private DefaultTransactionDefinition txDef;
 	public Authentication() {
 		mav= new ModelAndView();
 	} 
@@ -40,7 +54,7 @@ public class Authentication {
 			switch(servCode) {
 			case 0 :
 				this.accessForm();
-				break;	
+				break;		
 			}
 		}else{
 			switch(servCode) {
@@ -55,12 +69,91 @@ public class Authentication {
 				break;		
 			case 2 :
 				this.getManagementPage(emp[0]);
-				break;						
+				break;
+			case 4 :
+				this.sendEmail(emp[0]);;
+				break;
+			case 5 :
+				this.authEmail(emp[0]);;
+				break;
+			case 6 :
+				this.modPassword(emp[0]);;
+				break;		
 			}
 		}
 		return mav;
-	}	
-	public void getManagementPage(Employees emp) {
+	}
+	private void modPassword(Employees emp) {
+		String message="암호변경에 실패하였습니다.";
+		String page="password";
+		boolean tran=false;
+		this.setTransactionConf(TransactionDefinition.PROPAGATION_REQUIRED, TransactionDefinition.ISOLATION_READ_COMMITTED, false);
+		emp.setElPassword(this.enc.encode(emp.getElPassword()));
+		System.out.println(emp.getElPassword());
+		if(this.convertToBoolean(this.om.updPassword(emp))) {
+			tran=true;
+			page="index";
+			message="비밀번호 변경에 성공하였습니다.";
+		}
+		this.setTransactionEnd(tran);
+		this.mav.addObject("msg", message);
+		this.mav.setViewName(page);
+	}
+	private void authEmail(Employees emp) {
+		String code=null;
+		this.mav.addObject("msg", "변경할 패스워드를 입력해 주세요");
+
+		try {
+			code=this.enc.aesDecode(emp.getAuthCode(),"changePWD");		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		this.mav.addObject("stCode", code.substring(0, code.indexOf(",")));
+		this.mav.addObject("elCode", code.substring( code.indexOf(",")+1));
+		this.mav.setViewName("modPassword");
+	}
+	private void sendEmail(Employees emp) {
+		boolean isSendMail = false;
+		String page="password";
+		String message="등록된 정보와 일치하지 않습니다.";
+		/* 해당사원의 Email 일치 여부 확인 : DATABASE 작업 
+		 * stCode, elCode, email*/
+		if(this.convertToBoolean(this.om.isMember(emp))) {
+			String auth=emp.getStCode()+","+emp.getElCode();
+			try {
+				auth=this.enc.aesEncode(auth, "changePWD");
+			} catch (Exception e) {e.printStackTrace();}
+			/* Email Info */
+			String subject="비밀번호를 수정해주세요.";
+			String contents="<a href='http://localhost/EmailAuth?authCode="+auth+"'>인증 작업을 위해 이동해 주세요.</a>";
+			String from="ohj5535967@naver.com";
+			String to=emp.getEmail();
+			/* Creation MimeMessage */
+			MimeMessage mail=javaMail.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(mail,"UTF-8");
+			try {
+				helper.setFrom(from);
+				helper.setTo(to);
+				helper.setSubject(subject);
+				helper.setText(contents,true);
+				javaMail.send(mail);
+				isSendMail=true;
+			} catch (MessagingException e) {
+				isSendMail=false;
+				e.printStackTrace();
+			}
+			message=isSendMail?"요청하신 메일주소로 인증코드를 발송하였습니다.":"메일 발송에 실패했습니다. 다시 시도해주세요";
+			page="index";
+		}
+		
+		/* message 작성*/
+		this.mav.addObject("msg",message);
+		/* page */
+		this.mav.setViewName("index");
+	}
+	
+	private void getManagementPage(Employees emp) {
 		String page="redirect:/";
 		String message=null;
 		try {
@@ -76,7 +169,7 @@ public class Authentication {
 		mav.addObject("msg", message);
 		mav.setViewName(page);
 	}
-	public void accessForm() {
+	private void accessForm() {
 		//세션 유무 판단 >> 있음 : main /없음 : index
 		try {
 			String page="index";
@@ -92,7 +185,7 @@ public class Authentication {
 			e.printStackTrace();
 		}		
 	}
-	public void access(Employees emp) {
+	private void access(Employees emp) {
 		mav.addObject("name","wonzzang");
 		boolean isAccessCheck=false;
 		String page="index";
@@ -141,7 +234,7 @@ public class Authentication {
 		mav.setViewName(page);	
 
 	}
-	public void accessOut(Employees emp) {
+	private void accessOut(Employees emp) {
 		mav.addObject("name","wonzzang");
 		String page="redirect:/";	
 		try {
@@ -180,7 +273,18 @@ public class Authentication {
 		mav.addObject("msg",message);
 		mav.setViewName(page);
 	}
-	protected boolean convertToBoolean(int number) {
+	private boolean convertToBoolean(int number) {
 		return number>0?true:false;
+	}
+	private void setTransactionConf(int propa, int iso, boolean isRead) {
+		this.txDef= new DefaultTransactionDefinition();
+		this.txDef.setPropagationBehavior(propa);
+		this.txDef.setIsolationLevel(iso);
+		this.txDef.setReadOnly(isRead);
+		this.txStatus=this.tx.getTransaction(txDef);
+	}
+	private void setTransactionEnd(boolean tran){
+		if(tran)this.tx.commit(txStatus);
+		else this.tx.rollback(txStatus);
 	}
 }

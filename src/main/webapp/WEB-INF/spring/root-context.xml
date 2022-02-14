@@ -8,8 +8,11 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="firstDBCP" class="com.zaxxer.hikari.HikariConfig">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.0.171:1521:xe"></property>
-		<property name="username" value="HJ11"></property>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.0.171:1521:xe"></property> 
+		<property name="username" value="HJ11"></property>	
+		
+		 <!-- <property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.219.190:1521:xe"></property>
+		<property name="username" value="HJHOME"></property>-->
 		<property name="password" value="1234"></property>	
 	</bean>
 	<bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -20,6 +23,25 @@
 	</bean> 
 	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="ds"></property>
-	</bean>	
+	</bean>	 
+	<!-- mail -->
+	<bean id="mailSetting" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.naver.com" />
+		<property name="port" value="587" />
+		<property name="username" value="ohj5535967" />
+		<property name="password" value="gmlwls123!" />
+		<property name="defaultEncoding" value="utf-8"/>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtps.ssl.checkserveridentity">true</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtps.ssl.trust">*</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+			</props>
+		</property>
+	</bean>
 		<mybatis-spring:scan base-package="com.springfourth.db"/>
 </beans>
