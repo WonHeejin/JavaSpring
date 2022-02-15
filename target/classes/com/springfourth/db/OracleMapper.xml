@@ -11,7 +11,7 @@
 		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},1)
 	</insert>
 	<select id="getAccessInfo" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
-		SELECT * FROM NEWDBA1JO.ACCESSINFO2 
+	 	SELECT * FROM <!-- NEWDBA1JO. -->ACCESSINFO2 
 		WHERE STCODE=#{stCode} AND ELCODE=#{elCode}
 	</select>
 	<insert id="insAccessOut" parameterType="com.springfourth.beans.Employees">
