@@ -2,7 +2,9 @@ package com.springfourth.services.managements;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -17,6 +19,8 @@ import com.springfourth.beans.Employees;
 import com.springfourth.beans.Goods;
 import com.springfourth.db.OracleMapper;
 import com.springfourth.utils.Encryption;
+
+import net.coobird.thumbnailator.Thumbnailator;
 
 @Service
 public class Management{
@@ -56,14 +60,21 @@ public class Management{
 	}
 	private void updGoodsInfo(Model md) {
 		boolean tran=false;
-		//propagation, isolation 설정
+		//propagation, isolation 설정              
 		this.setTransactionConf(TransactionDefinition.PROPAGATION_REQUIRED, TransactionDefinition.ISOLATION_READ_COMMITTED, false);
 		//상품정보 업데이트
 		if(this.convertToBoolean(this.om.updGoodsInfo((Goods)md.getAttribute("go")))) {
 			//File 저장
 			File saveFile=null;
 			for(MultipartFile mf:(MultipartFile[])md.getAttribute("file")) {
-				saveFile=new File(((Goods)md.getAttribute("go")).getGoImgLoc());
+				saveFile=new File("images/"+mf.getOriginalFilename());
+				try {
+					if(Files.probeContentType(saveFile.toPath()).startsWith("image")) {
+						FileOutputStream thumbnail= new FileOutputStream(new File("C:\\Class\\HEEJIN\\springfourth\\src\\main\\webapp\\resources",((Goods)md.getAttribute("go")).getGoImgLoc()));
+						Thumbnailator.createThumbnail(mf.getInputStream(), thumbnail, 370, 250);
+						thumbnail.close();
+					}
+				} catch (IOException e1) {e1.printStackTrace();}
 				try {mf.transferTo(saveFile);} catch (Exception e) {e.printStackTrace();}
 			}
 			tran=true;
