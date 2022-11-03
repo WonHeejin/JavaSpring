@@ -25,5 +25,5 @@
 	<context:component-scan base-package="com.springfourth.services.auth" />
 	<context:component-scan base-package="com.springfourth.utils" />
 	<context:component-scan base-package="com.springfourth.services.managements" />
-	
+	<context:component-scan base-package="com.springfourth.services.sales" />
 </beans:beans>

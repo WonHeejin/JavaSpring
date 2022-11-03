@@ -11,5 +11,6 @@ public class Employees {
 	private String publicIp;
 	private String lastTime;
 	private String elLevel;
+	private int accessType;
 	
 }
