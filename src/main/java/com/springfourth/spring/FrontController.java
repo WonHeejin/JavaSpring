@@ -62,5 +62,21 @@ public class FrontController {
 	public ModelAndView sales(@ModelAttribute Employees emp) {
 		return sale.backController(3,emp);	
 	}
+	@RequestMapping(value = "/PasswordForm", method = RequestMethod.GET)
+	public String passwordForm() {
+		return "password";	
+	}
+	@RequestMapping(value = "/FindPassword", method = RequestMethod.POST)
+	public ModelAndView findPassword(@ModelAttribute Employees emp) {
+		return auth.backController(4, emp);	
+	}
+	@RequestMapping(value = "/EmailAuth", method = RequestMethod.GET)
+	public ModelAndView emailAuth(@ModelAttribute Employees emp) {
+		return auth.backController(5, emp);	
+	}
+	@RequestMapping(value = "/ModPassword", method = RequestMethod.POST)
+	public ModelAndView modPassword(@ModelAttribute Employees emp) {
+		return auth.backController(6, emp);	
+	}
 	
 }

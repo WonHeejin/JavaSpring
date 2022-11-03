@@ -85,6 +85,10 @@ function authentication(){
 				<input type="button" id="btn" onClick="authentication()" value="로그인"/>
 			</td>	
 		</tr>
+		<tr class="line">
+			<td><a href="http://192.168.0.143/PasswordForm">비밀번호 찾기</a></td>
+			<td><a href="http://192.168.0.143/Form">파일 업로드</a></td>
+		</tr>
 	</table>
 </form>	
 </body>

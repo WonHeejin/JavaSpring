@@ -12,5 +12,7 @@ public class Employees {
 	private String lastTime;
 	private String elLevel;
 	private int accessType;
+	private String email;
+	private String authCode;
 	
 }

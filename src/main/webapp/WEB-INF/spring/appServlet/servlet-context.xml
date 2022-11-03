@@ -21,6 +21,11 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
+	<!-- Multipart Resolver -->
+	<beans:bean id="mpr"
+	class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+	</beans:bean>
+	
 	<context:component-scan base-package="com.springfourth.spring" />
 	<context:component-scan base-package="com.springfourth.services.auth" />
 	<context:component-scan base-package="com.springfourth.utils" />

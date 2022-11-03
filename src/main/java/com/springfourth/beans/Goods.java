@@ -10,4 +10,7 @@ public class Goods {
 	private int goPrice;
 	private int goDiscount;
 	private String goStatus;
+	private int goStock;
+	private String goImgLoc;
+	private int goCost;
 }
