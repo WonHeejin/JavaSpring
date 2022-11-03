@@ -7,10 +7,7 @@
 <title>Main Page :: Dynamic :: AccessInfo</title>
  <script src="resources/js/resource.js"></script>
 <script>
-	//get방식은 location.href를 이용하는게 더 간편하다.
- function accessOut(stCode,elCode){
-	location.href="AccessOut?stCode="+stCode+"&elCode="+elCode;
-} 
+
  function mouseOver(obj){
 /* 	 let styleName = (obj.id == "mgt")? "mgtOver": "salesOver";
 		obj.className = styleName; */
@@ -86,7 +83,7 @@
 		  text-align:right;}  	 
 </style>
 </head>
-<body>
+<body onLoad="initIp()">
 	<div id="infoLogo">
 		<div id="logo">WEB POS</div>
 	<div id="info">

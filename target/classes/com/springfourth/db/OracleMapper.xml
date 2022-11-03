@@ -14,7 +14,11 @@
 		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},1)
 	</insert>
 	<select id="getAccessInfo" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
-		SELECT STCODE, STNAME, ELCODE, ELNAME, LASTTIME FROM NEWDBA1JO.ACCESSINFO 
-		WHERE LASTTIME=(SELECT MAX(LASTTIME) FROM NEWDBA1JO.ACCESSINFO WHERE STCODE=#{stCode} AND ELCODE=#{elCode} AND PUBLICIP=#{publicIp})
+		SELECT * FROM NEWDBA1JO.ACCESSINFO2 
+		WHERE STCODE=#{stCode} AND ELCODE=#{elCode} AND PUBLICIP=#{publicIp}
 	</select>
+	<insert id="insAccessOut" parameterType="com.springfourth.beans.Employees">
+		INSERT INTO AH(AH_ELSTCODE, AH_ELCODE, AH_TIME, AH_IP, AH_TYPE) 
+		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},-1)
+	</insert>
 </mapper>
