@@ -14,6 +14,7 @@
  *3. AJAX(비동기 타입..?) + Json(데이터타입) >> 앱 때문에 자주 사용
  */
 function authentication(){
+
 	 //1. HTML 개체와의 연결 : name, id 속성 이용
 	
 	 //2. 사용자 데이터 수집
@@ -54,7 +55,7 @@ function authentication(){
 	.line {height:70px;}		
 </style>
 </head>
-<body onLoad="initIp()">
+<body onLoad="initIp('${msg}')">
 <form action="Access" name="login"method="post">
 	<table>
 		<tr class="title">
