@@ -2,8 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.springfourth.db.OracleMapper">
-	<select id="sysdate2" resultType="string"> <!-- id는 interface에서 만든 메소드 이름, String은 소문자로 써야함 -->
-		SELECT TD_SYSDATE FROM NEWDBA1JO.TODAY
+<mapper namespace="com.springfourth.db.OracleMapper"><!-- ↓파라미터(Employees emp)의 타입을 import -->
+	<select id="isEmployee" parameterType="com.springfourth.beans.Employees" resultType="string"> <!-- id는 interface에서 만든 메소드 이름, resultType=string은 소문자로 써야함, -->
+		SELECT EL_PASSWORD FROM EL WHERE EL_STCODE=#{stCode} AND EL_CODE=#{elCode}
+	</select>
+	<insert id="insAccessHistory" parameterType="com.springfourth.beans.Employees">
+		INSERT INTO AH(AH_ELSTCODE, AH_ELCODE, AH_TIME, AH_IP, AH_TYPE) 
+		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},1)
+	</insert>
+	<select id="getAccessInfo" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
+		SELECT * FROM NEWDBA1JO.ACCESSINFO2 
+		WHERE STCODE=#{stCode} AND ELCODE=#{elCode} AND PUBLICIP=#{publicIp}
+	</select>
+	<insert id="insAccessOut" parameterType="com.springfourth.beans.Employees">
+		INSERT INTO AH(AH_ELSTCODE, AH_ELCODE, AH_TIME, AH_IP, AH_TYPE) 
+		VALUES(#{stCode},#{elCode},DEFAULT,#{publicIp},-1)
+	</insert>
+	<select id="getEmplist" parameterType="com.springfourth.beans.Employees" resultType="com.springfourth.beans.Employees">
+		SELECT EL_STCODE AS STCODE, EL_CODE AS ELCODE, EL_NAME AS ELNAME, EL_LVCODE AS ELLEVEL FROM EL 
+		WHERE EL_STCODE='${stCode}' 
+	</select>
+	<select id="getMMlist" parameterType="com.springfourth.beans.Members" resultType="com.springfourth.beans.Members">
+		SELECT MM_CODE AS MMCODE, MM_NAME AS MMNAME FROM MM  
 	</select>
 </mapper>
